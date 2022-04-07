@@ -15,15 +15,23 @@ namespace DNSMXRecordsConsoleApp
 
         private string[] _input;
         private string _path = "temporaryFile.txt";
+        public string address = string.Empty;
         public DomainRequestType(string[] input)
         {
             _input = input;
         }
         public void processingRequest()
         {
-            if (_input.Length == 1)
+            if (_input.Length == 1 || _input[0].Equals("-dns"))
             {
-                SingleDomain(_input[0]);
+                if(_input[0].Equals("-dns"))
+                {
+                    SingleDomain(_input[_input.Length - 1]);
+                }
+                else
+                {
+                    SingleDomain(_input[0]);
+                }
             }
             else
             {
@@ -39,8 +47,8 @@ namespace DNSMXRecordsConsoleApp
             {
                 var convertedResponse = ConvertResponse(record.ToString());
                 writeToTemporaryFile(convertedResponse);
+                Console.WriteLine(convertedResponse);
             }
-            return;
         }
 
         private void MultipleDomains()
@@ -49,7 +57,6 @@ namespace DNSMXRecordsConsoleApp
             {
                 SingleDomain(domain);
             }
-            return;
         }
 
         private string ConvertResponse(string response)
@@ -60,9 +67,11 @@ namespace DNSMXRecordsConsoleApp
                 var domain = parameters[0];
                 var preference = parameters[4];
                 var exchange = parameters[5];
-                var address = Dns.GetHostAddresses(exchange);
-                //Console.WriteLine(address.Length);
-                var currentResponse = ($"{domain} MX preference = {preference}, mail exchanger = {exchange} {address[0]}").ToString();
+                if(string.IsNullOrEmpty(address))
+                {
+                    address = (Dns.GetHostAddresses(exchange))[0].ToString();
+                }
+                var currentResponse = ($"{domain} MX preference = {preference}, mail exchanger = {exchange} {address}").ToString();
                 RequestResult.addResult(currentResponse);
                 return currentResponse;
             }

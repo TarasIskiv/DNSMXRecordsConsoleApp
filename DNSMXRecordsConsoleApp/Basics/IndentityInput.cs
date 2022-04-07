@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DNSMXRecordsConsoleApp.Requests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,20 +27,14 @@ namespace DNSMXRecordsConsoleApp
             switch (firstParameter)
             {
                 case "-input":
-                    Console.WriteLine("in");
                     return new InputRequestType(_input[1]);
-                    break;
                 case "-output":
-                    Console.WriteLine("out");
                     return new OutputRequestType(_input[1]);
-                    break;
                 case "-dns":
-                    Console.WriteLine("dns");
-                    break;
+                    return new DNSRequestType(_input);
                 default:
                     if (Domain.possibleDomains.Contains(firstParameter))
                     {
-                        Console.WriteLine("Operation : " + firstParameter);
                         return new DomainRequestType(_input);
                     }
                     else

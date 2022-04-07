@@ -14,6 +14,7 @@ namespace DNSMXRecordsConsoleApp
         //gmail.com MX preference = XXX, mail exchanger = alt3.gmail-smtp-in.l.google.com 8.8.8.8
 
         private string[] _input;
+        private string _path = "temporaryFile.txt";
         public DomainRequestType(string[] input)
         {
             _input = input;
@@ -36,7 +37,8 @@ namespace DNSMXRecordsConsoleApp
             var result = lookup.Query(domain, QueryType.MX);
             foreach (var record in result.Answers)
             {
-                ConvertResponse(record.ToString());
+                var convertedResponse = ConvertResponse(record.ToString());
+                writeToTemporaryFile(convertedResponse);
             }
             return;
         }
@@ -50,7 +52,7 @@ namespace DNSMXRecordsConsoleApp
             return;
         }
 
-        private void ConvertResponse(string response)
+        private string ConvertResponse(string response)
         {
             try
             {
@@ -58,12 +60,37 @@ namespace DNSMXRecordsConsoleApp
                 var domain = parameters[0];
                 var preference = parameters[4];
                 var exchange = parameters[5];
-                var currentResponse = (domain + " MX preference = " + preference + ", mail exchanger = " + exchange).ToString();
-                Console.WriteLine(currentResponse);
+                var address = Dns.GetHostAddresses(exchange);
+                //Console.WriteLine(address.Length);
+                var currentResponse = ($"{domain} MX preference = {preference}, mail exchanger = {exchange} {address[0]}").ToString();
+                RequestResult.addResult(currentResponse);
+                return currentResponse;
             }
             catch(Exception)
             {
-                Console.WriteLine(response);
+                return response;
+            }
+        }
+
+        private void writeToTemporaryFile(string content)
+        {
+            try
+            {
+                if(!File.Exists(_path))
+                {
+                    File.Create(_path);
+                }
+                var fileStream = new FileStream(_path, FileMode.Append, FileAccess.Write);
+                using (var streamWriter = new StreamWriter(fileStream, Encoding.UTF8))
+                {
+                    streamWriter.WriteLine(content);
+                }
+               
+                fileStream.Close();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
     }

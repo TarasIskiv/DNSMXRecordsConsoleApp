@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace DNSMXRecordsConsoleApp
 {
-    public class RequestResult
+    public static class RequestResult
     {
-        public static string lastResult = string.Empty;
+        private static readonly ISet<string> results = new HashSet<string>();
+
+        public static void addResult(string response) => results.Add(response);
+
+        public static IEnumerable<string> getAllResults() => results;
+
+        public static void clearResults() => results.Clear();
+
     }
 }

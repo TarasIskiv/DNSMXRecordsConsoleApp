@@ -1,17 +1,12 @@
-﻿using System;
+﻿using DNSMXRecordsConsoleApp;
+using System;
 Console.WriteLine("Hello, World!");
 
-var domens = new List<string>()
-{
-    "gmail.com",
-    "yahoo.com",
-    "hotmail.com",
-    "aol.com",
-    "outlook.com",
-    "icloud.com",
-    "protonmail.com",
-    "gmx.com"
-};
+var input = new IndentityInput(args);
+var type = input.Identity();
+type.processingRequest();
+Console.WriteLine("\n");
 
 
-Console.WriteLine(args[1]);
+
+//Console.WriteLine(args[0]);
